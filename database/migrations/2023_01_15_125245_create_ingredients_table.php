@@ -25,7 +25,8 @@ return new class extends Migration {
             $table->foreign('menu_id')
                 ->references('id')
                 ->on(Menu::TABLE)
-                ->onDelete('cascade');
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
 
         });
     }

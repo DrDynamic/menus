@@ -17,7 +17,7 @@ return new class extends Migration {
         Schema::create(Menu::TABLE, function (Blueprint $table) {
             $table->id();
             $table->string('name', 32);
-            $table->string('image_url');
+            $table->string('image_url')->nullable();
             $table->unsignedBigInteger('created_by_user_id');
             $table->timestamps();
             $table->softDeletes();
@@ -25,7 +25,8 @@ return new class extends Migration {
             $table->foreign('created_by_user_id')
                 ->references('id')
                 ->on(User::TABLE)
-                ->onDelete('cascade');
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
         });
     }
 
