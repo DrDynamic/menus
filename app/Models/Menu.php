@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int id
  * @property string name
  * @property string image_url
+ * @property int created_by_user_id
  * @property Carbon created_at
  * @property Carbon updated_at
  * @property Carbon deleted_at
@@ -25,6 +26,12 @@ class Menu extends Model
     public const TABLE = "menus";
 
     protected $table = self::TABLE;
+
+    public $fillable = [
+        'name',
+        'image_url',
+        'created_by_user_id'
+    ];
 
     public function createdBy()
     {

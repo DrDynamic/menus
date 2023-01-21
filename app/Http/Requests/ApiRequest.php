@@ -7,10 +7,23 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class ApiRequest extends FormRequest
 {
-    protected function userCan(string ...$permissions)
+
+    /** @var UserRepository */
+    private mixed $userRepo;
+
+    public function __construct(array $query = [], array $request = [], array $attributes = [], array $cookies = [],
+                                array $files = [], array $server = [], $content = null)
     {
-        /** @var UserRepository $userRepo */
-        $userRepo = app(UserRepository::class);
-        return $userRepo->userCan($this->user(), ...$permissions);
+        parent::__construct($query, $request, $attributes, $cookies, $files, $server, $content);
+        $this->userRepo = app(UserRepository::class);
+    }
+
+    public function userCan(string ...$permissions)
+    {
+        return $this->userRepo->userCan($this->user(), ...$permissions);
+    }
+
+    public function userCanSome(...$permissions) {
+        return $this->userRepo->userCanSome($this->user(), ...$permissions);
     }
 }

@@ -4,8 +4,9 @@ namespace App\Http\Requests\Api\Menu;
 
 use App\Http\Requests\ApiRequest;
 use App\Services\Permissions;
+use Illuminate\Foundation\Http\FormRequest;
 
-class IndexMenuRequest extends ApiRequest
+class UpdateManuRequest extends ApiRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -14,9 +15,7 @@ class IndexMenuRequest extends ApiRequest
      */
     public function authorize()
     {
-        return $this->userCanSome(
-            Permissions::INDEX_OWN_MENUS,
-            Permissions::INDEX_ALL_MENUS);
+        return $this->userCan(Permissions::UPDATE_MENU);
     }
 
     /**
@@ -27,8 +26,8 @@ class IndexMenuRequest extends ApiRequest
     public function rules()
     {
         return [
-            //
+            'name' => 'sometimes|string|max:32',
+            'image_url' => 'sometimes|string|max:255',
         ];
     }
-
 }

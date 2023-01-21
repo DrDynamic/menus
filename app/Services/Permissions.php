@@ -8,18 +8,23 @@ class Permissions
     public const ROLE_USER            = "user";
     public const ROLE_UNAUTHENTICATED = "unauthenticated";
 
-    public const INDEX_OWN_MENUS = 'menus.index.own';
-    public const INDEX_ALL_MENUS = 'menus.index.all';
-
+    public const        INDEX_OWN_MENUS = 'menu.index.own';
+    public const        INDEX_ALL_MENUS = 'menu.index.all';
+    public const        STORE_MENU      = "menu.store";
+    const               UPDATE_MENU     = "menu.update";
+    const               DESTROY_MENU    = "menu.destroy";
 
     public const PERISSIONS = [
         self::INDEX_OWN_MENUS,
         self::INDEX_ALL_MENUS,
+        self::STORE_MENU,
+        self::UPDATE_MENU,
+        self::DESTROY_MENU
     ];
 
     public const ROLES = [
-        self::ROLE_ADMIN => self::PERISSIONS,
-        self::ROLE_USER => [
+        self::ROLE_ADMIN           => self::PERISSIONS,
+        self::ROLE_USER            => [
             self::INDEX_OWN_MENUS
         ],
         self::ROLE_UNAUTHENTICATED => []

@@ -28,6 +28,7 @@ class MenuFactory extends Factory
     {
         return [
             "name" => $this->faker->foodName(),
+            "image_url" => $this->faker->url,
         ];
     }
 }

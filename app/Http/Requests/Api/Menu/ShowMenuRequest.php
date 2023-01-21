@@ -5,7 +5,7 @@ namespace App\Http\Requests\Api\Menu;
 use App\Http\Requests\ApiRequest;
 use App\Services\Permissions;
 
-class IndexMenuRequest extends ApiRequest
+class ShowMenuRequest extends ApiRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -14,9 +14,10 @@ class IndexMenuRequest extends ApiRequest
      */
     public function authorize()
     {
-        return $this->userCanSome(
-            Permissions::INDEX_OWN_MENUS,
-            Permissions::INDEX_ALL_MENUS);
+        if ($this->userCan(Permissions::INDEX_OWN_MENUS)) {
+            return $this->menu->created_by_user_id == $this->user()->id;
+        }
+        return $this->userCanSome(Permissions::INDEX_ALL_MENUS, Permissions::INDEX_OWN_MENUS);
     }
 
     /**
@@ -30,5 +31,4 @@ class IndexMenuRequest extends ApiRequest
             //
         ];
     }
-
 }

@@ -8,10 +8,10 @@ class UserRepository
 {
     public function userCan($user, ...$permissions)
     {
-        $permissions = $this->getPermissionsForUser($user);
+        $userPermissions = $this->getPermissionsForUser($user);
 
         foreach ($permissions as $permission) {
-            if (!$permissions->contains($permission)) {
+            if (!$userPermissions->contains($permission)) {
                 return false;
             }
         }

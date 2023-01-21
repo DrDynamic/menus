@@ -3,11 +3,16 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\Menu\DestroyMenuRequest;
 use App\Http\Requests\Api\Menu\IndexMenuRequest;
+use App\Http\Requests\Api\Menu\ShowMenuRequest;
+use App\Http\Requests\Api\Menu\StoreMenuRequest;
+use App\Http\Requests\Api\Menu\UpdateManuRequest;
+use App\Models\Menu;
 use App\Repositories\MenuRepository;
 use App\Repositories\UserRepository;
 use App\Services\Permissions;
-use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class MenuController extends Controller
 {
@@ -38,12 +43,16 @@ class MenuController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
+     * @param StoreMenuRequest $request
+     * @return Response
      */
-    public function store(Request $request)
+    public function store(StoreMenuRequest $request)
     {
-        //
+        return $this->menuRepository->createMenu(array_merge(
+            $request->validated(), [
+                "created_by_user_id" => $request->user()->id
+            ]
+        ));
     }
 
     /**
@@ -52,9 +61,9 @@ class MenuController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(ShowMenuRequest $request, Menu $menu)
     {
-        //
+        return $this->menuRepository->getById($menu->id);
     }
 
     /**
@@ -64,9 +73,9 @@ class MenuController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateManuRequest $request, Menu $menu)
     {
-        //
+        return $this->menuRepository->updateMenu($menu, $request->validated());
     }
 
     /**
@@ -75,8 +84,8 @@ class MenuController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(DestroyMenuRequest $request, Menu $menu)
     {
-        //
+        return $this->menuRepository->deleteMenu($menu);
     }
 }
