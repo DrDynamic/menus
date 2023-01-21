@@ -1,7 +1,7 @@
 <?php
 
-use App\Models\Ingredient;
 use App\Models\Menu;
+use App\Models\Ingredient;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -14,19 +14,21 @@ return new class extends Migration {
      */
     public function up()
     {
-        Schema::create(Ingredient::TABLE, function (Blueprint $table) {
+        Schema::create('ingredient_menu', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 32);
-
             $table->unsignedBigInteger('menu_id');
-            $table->timestamps();
+            $table->unsignedBigInteger('ingredient_id');
+            $table->unsignedFloat('amount');
+            $table->string('unit', 16);
+
+            $table->unique(['menu_id', 'ingredient_id']);
 
             $table->foreign('menu_id')
                 ->references('id')
-                ->on(Menu::TABLE)
-                ->onDelete('cascade')
-                ->onUpdate('cascade');
-
+                ->on(Menu::TABLE);
+            $table->foreign('ingredient_id')
+                ->references('id')
+                ->on(Ingredient::TABLE);
         });
     }
 
@@ -37,6 +39,6 @@ return new class extends Migration {
      */
     public function down()
     {
-        Schema::dropIfExists('ingredients');
+        Schema::dropIfExists('ingredient_menu');
     }
 };
