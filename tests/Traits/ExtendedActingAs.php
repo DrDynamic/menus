@@ -10,7 +10,7 @@ trait ExtendedActingAs
     private $admin = null;
 
 
-    public function getAdmin()
+    public function getAdmin(): User
     {
         if ($this->admin == null) {
             /** @var User $admin */

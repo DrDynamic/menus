@@ -2,11 +2,19 @@
 
 namespace App\Repositories;
 
-use App\Models\Ingredient;
 use App\Models\Menu;
 
 class MenuRepository
 {
+
+    public const ENTITY_RELATIONS = [
+        'createdBy',
+        'ingredients'
+    ];
+
+    public const LIST_RELATIONS = [
+
+    ];
 
     private IngredientsRepository $ingredientsRepository;
 
@@ -17,12 +25,13 @@ class MenuRepository
 
     public function getAll()
     {
-        return Menu::all();
+        return Menu::with(self::LIST_RELATIONS)->get();
     }
 
     public function getByUserId(int $user_id)
     {
-        return Menu::whereCreatedByUserId($user_id)->get();
+        return Menu::whereCreatedByUserId($user_id)
+            ->with(self::LIST_RELATIONS)->get();
     }
 
     public function createMenu(array $data)
@@ -31,18 +40,20 @@ class MenuRepository
         $menu = Menu::create($data);
         $this->sync($menu, $data);
 
-        return $menu;
+        return $this->getById($menu->id);
     }
 
     public function getById(int $id)
     {
-        return Menu::whereId($id)->firstOrFail();
+        return Menu::whereId($id)
+            ->with(self::ENTITY_RELATIONS)
+            ->firstOrFail();
     }
 
     public function updateMenu(Menu $menu, array $data)
     {
         $menu->update($data);
-        $this->sync($menu);
+        $this->sync($menu, $data);
         return $this->getById($menu->id);
     }
 
@@ -55,22 +66,11 @@ class MenuRepository
     public function sync(Menu $menu, array $data)
     {
         if (isset($data['ingredients'])) {
-            $syncLists = collect($data['ingredients'])->mutations(Menu::class, 'ingredients');
+            $pivot = collect($data['ingredients'])->mapWithKeys(function ($ingredient, $key) {
+                return [$ingredient['id'] => $ingredient['pivot']];
+            })->toArray();
 
-            $syncLists['create']->each(function ($item) {
-                Ingredient::create($item);
-            });
-
-            $syncLists['update']->each(function ($item) {
-                Ingredient::where('id', $item['id'])
-                    ->first()
-                    ->update($item);
-            });
-
-            $syncLists['delete']->each(function ($item) {
-                Ingredient::where('id', $item['id'])->delete();
-            });
-
+            $menu->ingredients()->sync($pivot);
         }
     }
 

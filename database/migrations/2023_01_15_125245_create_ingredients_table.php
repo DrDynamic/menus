@@ -17,16 +17,7 @@ return new class extends Migration {
         Schema::create(Ingredient::TABLE, function (Blueprint $table) {
             $table->id();
             $table->string('name', 32);
-
-            $table->unsignedBigInteger('menu_id');
             $table->timestamps();
-
-            $table->foreign('menu_id')
-                ->references('id')
-                ->on(Menu::TABLE)
-                ->onDelete('cascade')
-                ->onUpdate('cascade');
-
         });
     }
 

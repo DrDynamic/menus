@@ -4,7 +4,6 @@ namespace App\Http\Requests\Api\Menu;
 
 use App\Http\Requests\ApiRequest;
 use App\Services\Permissions;
-use Illuminate\Foundation\Http\FormRequest;
 
 class StoreMenuRequest extends ApiRequest
 {
@@ -26,8 +25,13 @@ class StoreMenuRequest extends ApiRequest
     public function rules()
     {
         return [
-            'name' => 'required|string|max:32',
-            'image_url' => 'sometimes|string|max:255',
+            'name'                       => 'required|string|max:32',
+            'image_url'                  => 'sometimes|string|max:255',
+            'ingredients'                => 'sometimes|array',
+            'ingredients.*.id'           => 'required|numeric|exists:ingredients,id',
+            'ingredients.*.name'         => 'sometimes|string|max:32',
+            'ingredients.*.pivot.amount' => 'sometimes|numeric',
+            'ingredients.*.pivot.unit'   => 'sometimes|string|max:16'
         ];
     }
 }

@@ -12,6 +12,8 @@ use App\Models\Menu;
 use App\Repositories\MenuRepository;
 use App\Repositories\UserRepository;
 use App\Services\Permissions;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Response;
 
 class MenuController extends Controller
@@ -44,22 +46,22 @@ class MenuController extends Controller
      * Store a newly created resource in storage.
      *
      * @param StoreMenuRequest $request
-     * @return Response
+     * @return Application|ResponseFactory|Response
      */
     public function store(StoreMenuRequest $request)
     {
-        return $this->menuRepository->createMenu(array_merge(
+        return response($this->menuRepository->createMenu(array_merge(
             $request->validated(), [
                 "created_by_user_id" => $request->user()->id
             ]
-        ));
+        )), 201);
     }
 
     /**
      * Display the specified resource.
      *
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function show(ShowMenuRequest $request, Menu $menu)
     {
@@ -71,7 +73,7 @@ class MenuController extends Controller
      *
      * @param \Illuminate\Http\Request $request
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function update(UpdateManuRequest $request, Menu $menu)
     {
@@ -82,7 +84,7 @@ class MenuController extends Controller
      * Remove the specified resource from storage.
      *
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function destroy(DestroyMenuRequest $request, Menu $menu)
     {

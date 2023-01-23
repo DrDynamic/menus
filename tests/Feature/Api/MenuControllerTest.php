@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use App\Models\Ingredient;
 use App\Models\Menu;
 use App\Models\User;
 use App\Services\Permissions;
@@ -15,15 +16,24 @@ class MenuControllerTest extends TestCase
     {
         $this->actingAsAdmin();
 
-        Menu::factory(25)->create([
-            "created_by_user_id" => User::factory()->create()->id
-        ]);
+        $menus = Menu::factory(25)
+            ->hasAttached(Ingredient::factory()->count(5), ['amount' => 2, 'unit' => 'pcs'])
+            ->create([
+                "created_by_user_id" => User::factory()->create()->id
+            ]);
+
+        $menus = Menu::query()
+            ->with(['createdBy', 'ingredients'])
+            ->get();
 
         $response = $this->json(
             'GET',
             self::BASE_URL
         )
-            ->assertOk();
+            ->assertOk()
+            ->assertJsonPath('*.id', $menus->pluck('id')->toArray())
+            ->assertJsonPath('*.name', $menus->pluck('name')->toArray())
+            ->assertJsonPath('*.image_url', $menus->pluck('image_url')->toArray());
 
         foreach ($response->json() as $menu) {
             $this->assertDatabaseHas(Menu::TABLE, $menu);
@@ -43,11 +53,18 @@ class MenuControllerTest extends TestCase
             "created_by_user_id" => User::factory()->create()->id
         ]);
 
+        $menus = Menu::whereCreatedByUserId($user->id)
+            ->with(['createdBy', 'ingredients'])
+            ->get();
+
         $response = $this->json(
             'GET',
             self::BASE_URL
         )
-            ->assertOk();
+            ->assertOk()
+            ->assertJsonPath('*.id', $menus->pluck('id')->toArray())
+            ->assertJsonPath('*.name', $menus->pluck('name')->toArray())
+            ->assertJsonPath('*.image_url', $menus->pluck('image_url')->toArray());
 
         $response->assertJson($menus_see->toArray());
         $response->assertDontSee($menus_dont_see);
@@ -78,12 +95,37 @@ class MenuControllerTest extends TestCase
     public function test_storeCreatesMenu()
     {
         $this->actingAsAdmin();
-        $menuData = Menu::factory()->make()->toArray();
+
+        // Store All
+        /** @var Menu $menu */
+        $menu     = Menu::factory()->make();
+        $menuData = $menu->toArray();
+
+        $menuData['ingredients'] = Ingredient::factory(8)->create()
+            ->map(function ($ingredient) {
+                return array_merge($ingredient->toArray(),
+                    [
+                        'pivot' => [
+                            'amount' => mt_rand(1, 10),
+                            'unit'   => 'pieces'
+                        ]
+                    ]);
+            })->toArray();
+
+
         $this->json('POST', self::BASE_URL, $menuData)
             ->assertCreated()
+            ->assertJsonPath('name', $menu->name)
+            ->assertJsonPath('image_url', $menu->image_url)
+            ->assertJsonPath('created_by.id', $this->getAdmin()->id)
+            ->assertJsonPath('created_by.email', $this->getAdmin()->email)
+            ->assertJsonPath('ingredients.*.name', collect($menuData['ingredients'])->pluck('name')->toArray())
             ->assertJson($menuData);
+
+        unset($menuData['ingredients']);
         $this->assertDatabaseHas(Menu::TABLE, $menuData);
 
+        // Store Partial
         $menuData = Menu::factory()->make()->toArray();
         unset($menuData['image_url']);
         $this->json('POST', self::BASE_URL, $menuData)
@@ -91,7 +133,7 @@ class MenuControllerTest extends TestCase
             ->assertJson($menuData);
         $this->assertDatabaseHas(Menu::TABLE, $menuData);
 
-
+        // Store Empty
         $this->json('POST', self::BASE_URL, [])
             ->assertUnprocessable();
     }
@@ -122,7 +164,14 @@ class MenuControllerTest extends TestCase
         /** @var Menu $menu */
         $menu = Menu::factory([
             'created_by_user_id' => $this->getAdmin()->id
-        ])->create();
+        ])
+            ->hasAttached(Ingredient::factory(8), ['amount' => 2, 'unit' => 'pcs'])
+            ->create();
+
+        $menu = Menu::whereId($menu->id)
+            ->with(['createdBy', 'ingredients'])
+            ->firstOrFail();
+
         $this->json('GET', self::BASE_URL . "/{$menu->id}")
             ->assertOk()
             ->assertJson($menu->toArray());
@@ -134,7 +183,14 @@ class MenuControllerTest extends TestCase
         /** @var Menu $menu */
         $menu = Menu::factory([
             'created_by_user_id' => $this->getAdmin()->id
-        ])->create();
+        ])
+            ->hasAttached(Ingredient::factory(8), ['amount' => 3, 'unit' => 'pcs'])
+            ->create();
+
+        $menu = Menu::whereId($menu->id)
+            ->with(['createdBy', 'ingredients'])
+            ->firstOrFail();
+
         $this->json('GET', self::BASE_URL . "/{$menu->id}")
             ->assertForbidden();
 
@@ -142,7 +198,14 @@ class MenuControllerTest extends TestCase
         /** @var Menu $menu */
         $menu = Menu::factory([
             'created_by_user_id' => $user->id
-        ])->create();
+        ])
+            ->hasAttached(Ingredient::factory(8), ['amount' => 8, 'unit' => 'pcs'])
+            ->create();
+
+        $menu = Menu::whereId($menu->id)
+            ->with(['createdBy', 'ingredients'])
+            ->firstOrFail();
+
         $this->json('GET', self::BASE_URL . "/{$menu->id}")
             ->assertOk()
             ->assertJson($menu->toArray());
@@ -180,17 +243,37 @@ class MenuControllerTest extends TestCase
     {
         $this->actingAsAdmin();
 
+        /** @var Ingredient $ingredient */
+        $ingredient = Ingredient::factory()->create();
+
         /** @var Menu $menu */
         $menu = Menu::factory([
             'created_by_user_id' => $this->getAdmin()->id
-        ])->create();
+        ])
+            ->hasAttached(Ingredient::factory(8), ['amount' => 4, 'unit' => 'pcs'])
+            ->create();
+
+        $menu = Menu::whereId($menu->id)
+            ->with(['createdBy', 'ingredients'])
+            ->firstOrFail();
 
         $this->json('PUT', self::BASE_URL . "/{$menu->id}", [
-            'name'      => 'Lorem Ipsum',
-            'image_url' => 'http://ipsum.dolor/sit.amet'
+            'name'        => 'Lorem Ipsum',
+            'image_url'   => 'http://ipsum.dolor/sit.amet',
+            'ingredients' => [array_merge($ingredient->toArray(), [
+                'pivot' => [
+                    'amount' => 2,
+                    'unit'   => 'some'
+                ]
+            ])]
         ])->assertOk()
             ->assertJsonPath('name', 'Lorem Ipsum')
-            ->assertJsonPath('image_url', 'http://ipsum.dolor/sit.amet');
+            ->assertJsonPath('image_url', 'http://ipsum.dolor/sit.amet')
+            ->assertJsonPath('ingredients.*.id', [$ingredient->id])
+            ->assertJsonPath('ingredients.*.name', [$ingredient->name])
+            ->assertJsonPath('ingredients.*.pivot.amount', [2])
+            ->assertJsonPath('ingredients.*.pivot.unit', ['some']);
+
         $this->assertDatabaseHas(Menu::TABLE, [
             'id'        => $menu->id,
             'name'      => 'Lorem Ipsum',
@@ -200,13 +283,31 @@ class MenuControllerTest extends TestCase
         /** @var Menu $menu */
         $menu = Menu::factory([
             'created_by_user_id' => $this->getAdmin()->id
-        ])->create();
+        ])
+            ->hasAttached(Ingredient::factory(8), ['amount' => 12, 'unit' => 'lorem'])
+            ->create();
+
+        $menu = Menu::whereId($menu->id)->with('createdBy', 'ingredients')
+            ->firstOrFail();
 
         $this->json('PUT', self::BASE_URL . "/{$menu->id}", [
-            'name' => 'Lorem Ipsum',
-        ])->assertOk()
+                'name'        => 'Lorem Ipsum',
+                'ingredients' => [array_merge($ingredient->toArray(), [
+                    'pivot' => [
+                        'amount' => 4,
+                        'unit'   => 'µg'
+                    ]
+                ])]
+            ]
+        )
+            ->assertOk()
             ->assertJsonPath('name', 'Lorem Ipsum')
-            ->assertJsonPath('image_url', $menu->image_url);
+            ->assertJsonPath('image_url', $menu->image_url)
+            ->assertJsonPath('ingredients.*.id', [$ingredient->id])
+            ->assertJsonPath('ingredients.*.name', [$ingredient->name])
+            ->assertJsonPath('ingredients.*.pivot.amount', [4])
+            ->assertJsonPath('ingredients.*.pivot.unit', ['µg']);
+
         $this->assertDatabaseHas(Menu::TABLE, [
             'id'        => $menu->id,
             'name'      => 'Lorem Ipsum',
@@ -223,7 +324,9 @@ class MenuControllerTest extends TestCase
             'image_url' => 'http://ipsum.dolor/sit.amet'
         ])->assertOk()
             ->assertJsonPath('name', $menu->name)
-            ->assertJsonPath('image_url', 'http://ipsum.dolor/sit.amet');
+            ->assertJsonPath('image_url', 'http://ipsum.dolor/sit.amet')
+            ->assertJsonPath('ingredients', []);
+        
         $this->assertDatabaseHas(Menu::TABLE, [
             'id'        => $menu->id,
             'name'      => $menu->name,
@@ -260,7 +363,8 @@ class MenuControllerTest extends TestCase
     }
 
 
-    public function test_destroyDeletesMenu(){
+    public function test_destroyDeletesMenu()
+    {
         $this->actingAsAdmin();
 
         /** @var Menu $menu */

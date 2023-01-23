@@ -5,19 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Date;
+use Ramsey\Collection\Collection;
 
 /**
  * // Properties
  * @property int id
  * @property string name
- * @property int amount
- * @property string unit
- * @property int menu_id
  * @property Date created_at
  * @property Date updated_at
  *
  * // Relations
- * @property Menu menu
+ * @property Menu[]|Collection menus
  */
 class Ingredient extends Model
 {
@@ -26,9 +24,13 @@ class Ingredient extends Model
     public const TABLE = "ingredients";
     protected $table = self::TABLE;
 
-    public function menu()
+    protected $fillable = [
+        'name'
+    ];
+
+    public function menus()
     {
-        return $this->belongsTo(Menu::class);
+        return $this->belongsToMany(Menu::class);
     }
 
 }
