@@ -14,12 +14,18 @@ class Permissions
     const               UPDATE_MENU     = "menu.update";
     const               DESTROY_MENU    = "menu.destroy";
 
+    const        INDEX_INGREDIENTS = "ingredient.index";
+    const        STORE_INGREDIENT  = "ingredient.store";
+
     public const PERISSIONS = [
         self::INDEX_OWN_MENUS,
         self::INDEX_ALL_MENUS,
         self::STORE_MENU,
         self::UPDATE_MENU,
-        self::DESTROY_MENU
+        self::DESTROY_MENU,
+
+        self::INDEX_INGREDIENTS,
+        self::STORE_INGREDIENT,
     ];
 
     public const ROLES = [

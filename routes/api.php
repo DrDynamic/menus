@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\IngredientController;
 use App\Http\Controllers\Api\MenuController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -26,5 +27,6 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 //    });
 
     Route::apiResource('menus', MenuController::class);
+    Route::apiResource('ingredient', IngredientController::class);
 
 });
