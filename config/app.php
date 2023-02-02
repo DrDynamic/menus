@@ -41,7 +41,7 @@ return [
     |
     */
 
-    'debug' => (bool) env('APP_DEBUG', false),
+    'debug' => (bool)env('APP_DEBUG', false),
 
     /*
     |--------------------------------------------------------------------------
@@ -155,6 +155,7 @@ return [
     */
 
     'providers' => [
+        App\Providers\LaravelJsLocalizationServiceProvider::class,
 
         /*
          * Laravel Framework Service Providers...
@@ -194,7 +195,6 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-
     ],
 
     /*
