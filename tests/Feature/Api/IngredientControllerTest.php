@@ -5,195 +5,77 @@ namespace Tests\Feature\Api;
 use App\Models\Ingredient;
 use App\Models\Menu;
 use App\Models\User;
-use App\Services\Permissions;
 use Tests\TestCase;
 
-class MenuControllerTest extends TestCase
+class IngredientControllerTest extends TestCase
 {
-    const BASE_URL = "/api/menus";
+    const BASE_URL = "/api/ingredient";
 
-    public function test_indexReturnsAllMenus()
+    public function test_indexReturnsAllIngredients()
     {
         $this->actingAsAdmin();
 
         $this->testIndex(
             self::BASE_URL,
-            Menu::factory([
-                "created_by_user_id" => User::factory()->create()->id
-            ]),
-            ['createdBy', 'ingredients'],
-            ['id', 'name', 'image_url']
+            Ingredient::factory(),
+            [],
+            ['name']
         );
     }
 
-    public function test_indexReturnsOwnMenus()
+    public function test_indexIngredientsNeedsAuthentication()
     {
-        $user = $this->makeUserWithRole(Permissions::ROLE_USER);
-        $this->actingAs($user);
-
-        $menus_see = Menu::factory(25)->create([
-            "created_by_user_id" => $user->id
-        ]);
-
-        $menus_dont_see = Menu::factory(25)->create([
-            "created_by_user_id" => User::factory()->create()->id
-        ]);
-
-        $menus = Menu::whereCreatedByUserId($user->id)
-            ->with(['createdBy', 'ingredients'])
-            ->get();
-
-        $response = $this->json(
-            'GET',
-            self::BASE_URL
-        )
-            ->assertOk()
-            ->assertJsonPath('*.id', $menus->pluck('id')->toArray())
-            ->assertJsonPath('*.name', $menus->pluck('name')->toArray())
-            ->assertJsonPath('*.image_url', $menus->pluck('image_url')->toArray());
-
-        $response->assertJson($menus_see->toArray());
-        $response->assertDontSee($menus_dont_see);
-
-        foreach ($response->json() as $menu) {
-            $this->assertDatabaseHas(Menu::TABLE, $menu);
-        }
+        $this->testUnauthenticated('GET', self::BASE_URL);
     }
 
-    public function test_indexReturns401WhenUnauthenticated()
+    public function test_indexIngredientsNeedsPermission()
     {
-        $this->json(
-            'GET',
-            self::BASE_URL
-        )->assertStatus(401);
+        $this->testForbidden('GET', self::BASE_URL);
     }
 
-    public function test_indexNeedsPermission()
-    {
-        $user = User::factory()->create();
-        $this->actingAs($user);
-
-        $this->json('GET',
-            self::BASE_URL,
-        )->assertStatus(403);
-    }
-
-    public function test_storeCreatesMenu()
+    public function test_storeCreatesIngredient()
     {
         $this->actingAsAdmin();
 
-        /** @var Menu $menu */
-        $menu = Menu::factory()->make();
-
-        $ingredients = Ingredient::factory(8)->create()
-            ->map(function ($ingredient) {
-                return array_merge($ingredient->toArray(),
-                    [
-                        'pivot' => [
-                            'amount' => mt_rand(1, 10),
-                            'unit'   => 'pieces'
-                        ]
-                    ]);
-            })->toArray();
+        /** @var Ingredient $ingredient */
+        $ingredient = Ingredient::factory()->make();
 
         $this->testStore(self::BASE_URL, [
-            'name' => $menu->name,
-        ], [
-            'image_url'   => $menu->image_url,
-            'ingredients' => $ingredients
+            'name' => $ingredient->name,
         ]);
     }
 
-    public function test_storeNeedsPermission()
+    public function test_storeIngredientNeedsPermission()
     {
         $this->testForbidden('POST', self::BASE_URL);
     }
 
-    public function test_storeReturns401WhenUnauthenticated()
+    public function test_storeIngredientNeedsAuthentication()
     {
         $this->testUnauthenticated('POST', self::BASE_URL);
     }
 
-    public function test_showReturnsMenu()
+    public function test_showReturnsIngredient()
     {
         $this->actingAsAdmin();
 
-        /** @var Menu $menu */
-        $menu = Menu::factory([
-            'created_by_user_id' => $this->getAdmin()->id
-        ])
-            ->hasAttached(Ingredient::factory(8), ['amount' => 2, 'unit' => 'pcs'])
-            ->create();
-
-        $menu = Menu::whereId($menu->id)
-            ->with(['createdBy', 'ingredients'])
-            ->firstOrFail();
-
-        $this->json('GET', self::BASE_URL . "/{$menu->id}")
-            ->assertOk()
-            ->assertJson($menu->toArray());
-
-
-        $user = $this->makeUserWithRole(Permissions::ROLE_USER);
-        $this->actingAs($user);
-
-        /** @var Menu $menu */
-        $menu = Menu::factory([
-            'created_by_user_id' => $this->getAdmin()->id
-        ])
-            ->hasAttached(Ingredient::factory(8), ['amount' => 3, 'unit' => 'pcs'])
-            ->create();
-
-        $menu = Menu::whereId($menu->id)
-            ->with(['createdBy', 'ingredients'])
-            ->firstOrFail();
-
-        $this->json('GET', self::BASE_URL . "/{$menu->id}")
-            ->assertForbidden();
-
-
-        /** @var Menu $menu */
-        $menu = Menu::factory([
-            'created_by_user_id' => $user->id
-        ])
-            ->hasAttached(Ingredient::factory(8), ['amount' => 8, 'unit' => 'pcs'])
-            ->create();
-
-        $menu = Menu::whereId($menu->id)
-            ->with(['createdBy', 'ingredients'])
-            ->firstOrFail();
-
-        $this->json('GET', self::BASE_URL . "/{$menu->id}")
-            ->assertOk()
-            ->assertJson($menu->toArray());
+        /** @var Ingredient $ingredient */
+        $ingredient = Ingredient::factory()->create();
+        $this->testShow(self::BASE_URL . "/{$ingredient->id}", $ingredient->toArray());
     }
 
     public function test_showNeedsPermission()
     {
-        /** @var Menu $menu */
-        $menu = Menu::factory([
-            'created_by_user_id' => $this->getAdmin()->id
-        ])->create();
-
-        $user = User::factory()->create();
-        $this->actingAs($user);
-
-        $this->json('GET',
-            self::BASE_URL . "/{$menu->id}"
-        )->assertStatus(403);
+        /** @var Ingredient $ingredient */
+        $ingredient = Ingredient::factory()->create();
+        $this->testForbidden('GET', self::BASE_URL . "/{$ingredient->id}");
     }
 
     public function test_showReturns401WhenUnauthenticated()
     {
-        /** @var Menu $menu */
-        $menu = Menu::factory([
-            'created_by_user_id' => $this->getAdmin()->id
-        ])->create();
-
-        $this->json(
-            'GET',
-            self::BASE_URL . "/{$menu->id}"
-        )->assertStatus(401);
+        /** @var Ingredient $ingredient */
+        $ingredient = Ingredient::factory()->create();
+        $this->testUnauthenticated('GET', self::BASE_URL . "/{$ingredient->id}");
     }
 
     public function test_updateModifiesMenu()
@@ -202,6 +84,11 @@ class MenuControllerTest extends TestCase
 
         /** @var Ingredient $ingredient */
         $ingredient = Ingredient::factory()->create();
+
+        $this->testUpdate(self::BASE_URL . "/{$ingredient->id}", [
+            
+        ]);
+
 
         /** @var Menu $menu */
         $menu = Menu::factory([
