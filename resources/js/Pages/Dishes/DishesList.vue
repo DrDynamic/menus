@@ -6,6 +6,8 @@
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">{{ $t('pages.dishes.title') }}</h2>
         </template>
 
+        <v-btn>Test!</v-btn>
+
         <div class="py-12">
 
             <div class="max-w-8xl mx-auto sm:px-6 lg:px-8">
