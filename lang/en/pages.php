@@ -1,7 +1,8 @@
 <?php
 
 return [
-    "home" => [
-        "title" => "Home"
+    "dishes" => [
+        "title" => "Dishes",
+        "" => "",
     ]
 ];
