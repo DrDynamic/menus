@@ -155,8 +155,6 @@ return [
     */
 
     'providers' => [
-        App\Providers\LaravelJsLocalizationServiceProvider::class,
-
         /*
          * Laravel Framework Service Providers...
          */
