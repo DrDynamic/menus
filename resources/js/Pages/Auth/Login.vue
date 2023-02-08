@@ -1,11 +1,7 @@
 <script setup>
-import Checkbox from '@/Components/Checkbox.vue';
-import GuestLayout from '@/Layouts/GuestLayout.vue';
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
-import { Head, Link, useForm } from '@inertiajs/inertia-vue3';
+import {Head, useForm} from '@inertiajs/inertia-vue3';
+import CookbookLayout from "@/Layouts/CookbookLayout.vue";
+import PasswordField from "@/Components/Form/PasswordField.vue";
 
 defineProps({
     canResetPassword: Boolean,
@@ -26,65 +22,59 @@ const submit = () => {
 </script>
 
 <template>
-    <GuestLayout>
-        <Head title="Log in" />
+    <CookbookLayout>
+        <Head title="Log in"/>
 
+        <v-container>
+            <v-card>
+                <v-card-title>{{$t('pages.profile.login.title')}}</v-card-title>
+
+                <v-container>
+                    <v-form @submit.prevent="submit">
+                        <v-text-field
+                            id="email"
+                            type="email"
+                            :label="$t('pages.profile.email.title')"
+                            v-model="form.email"
+                            required
+                            autofocus
+                            autocomplete="username"
+                            :error-messages="form.errors.email"
+                        />
+
+                        <PasswordField
+                            id="password"
+                            type="password"
+                            :label="$t('pages.profile.password.title')"
+                            class="mt-1 block w-full"
+                            v-model="form.password"
+                            required
+                            autocomplete="current-password"
+                            :error-messages="form.errors.password"
+                        />
+
+                        <v-checkbox
+                            name="remember"
+                            :label="$t('pages.profile.login.remember_me')"
+                            v-model="form.remember"/>
+
+                        <v-btn v-if="canResetPassword" :href="route('password.request')">
+                            {{ $t('pages.profile.login.forgot_password') }}
+                        </v-btn>
+
+                        <v-btn color="primary"
+                               type="submit"
+                               :disabled="form.processing">
+                            {{ $t('pages.profile.login.submit') }}
+                        </v-btn>
+                    </v-form>
+                </v-container>
+
+            </v-card>
+        </v-container>
         <div v-if="status" class="mb-4 font-medium text-sm text-green-600">
             {{ status }}
         </div>
 
-        <form @submit.prevent="submit">
-            <div>
-                <InputLabel for="email" value="Email" />
-                <v-text-field for="email" value="Email"
-                <TextInput
-                    id="email"
-                    type="email"
-                    class="mt-1 block w-full"
-                    v-model="form.email"
-                    required
-                    autofocus
-                    autocomplete="username"
-                />
-
-                <InputError class="mt-2" :message="form.errors.email" />
-            </div>
-
-            <div class="mt-4">
-                <InputLabel for="password" value="Password" />
-
-                <TextInput
-                    id="password"
-                    type="password"
-                    class="mt-1 block w-full"
-                    v-model="form.password"
-                    required
-                    autocomplete="current-password"
-                />
-
-                <InputError class="mt-2" :message="form.errors.password" />
-            </div>
-
-            <div class="block mt-4">
-                <label class="flex items-center">
-                    <Checkbox name="remember" v-model:checked="form.remember" />
-                    <span class="ml-2 text-sm text-gray-600">Remember me</span>
-                </label>
-            </div>
-
-            <div class="flex items-center justify-end mt-4">
-                <Link
-                    v-if="canResetPassword"
-                    :href="route('password.request')"
-                    class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                    Forgot your password?
-                </Link>
-
-                <PrimaryButton class="ml-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Log in
-                </PrimaryButton>
-            </div>
-        </form>
-    </GuestLayout>
+    </CookbookLayout>
 </template>

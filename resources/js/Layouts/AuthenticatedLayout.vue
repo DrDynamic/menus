@@ -17,6 +17,10 @@ if (names.length < 1) {
 initials = initials.toUpperCase();
 
 
+function logout() {
+    axios.post('/logout');
+}
+
 </script>
 <template>
     <v-app>
@@ -39,9 +43,13 @@ initials = initials.toUpperCase();
                     <v-card>
                         <v-list>
                             <v-list-item :href="route('profile.edit')"
-                                prepend-icon="mdi-account-circle"
+                                         prepend-icon="mdi-account-circle"
                                          density="compact"
                                          :title="$t('pages.profile.settings')"/>
+                            <v-list-item @click="logout"
+                                         prepend-icon="mdi-account-circle"
+                                         density="compact"
+                                         :title="$t('pages.profile.login.logout')"/>
                         </v-list>
                     </v-card>
                 </v-menu>

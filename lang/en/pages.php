@@ -26,6 +26,14 @@ return [
             "confirm" => "Confirm Password",
         ],
 
+        "login" => [
+            "title"           => "Login",
+            "remember_me"     => "Remember Me",
+            "forgot_password" => "Forgot your password?",
+            "submit"          => "Log in",
+            "logout"          => "Log out"
+        ],
+
         "update" => [
             "title"       => "Profile Information",
             "description" => "Update your account's profile information and email address.",

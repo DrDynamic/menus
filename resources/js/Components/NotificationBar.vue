@@ -21,14 +21,8 @@ eventBus.$on('notification', (n) => {
 });
 </script>
 <template>
-    <div>
-        <v-btn @click="isOpen=true">Open</v-btn>
-        {{ isOpen }}
-        <v-snackbar v-model="isOpen" :color="notification.color" :timeout="notification.timeout">
-            <v-icon>{{ notification.icon }}</v-icon>
-            {{ notification.text }}
-        </v-snackbar>
-
-    </div>
-
+    <v-snackbar v-model="isOpen" :color="notification.color" :timeout="notification.timeout">
+        <v-icon>{{ notification.icon }}</v-icon>
+        {{ notification.text }}
+    </v-snackbar>
 </template>
