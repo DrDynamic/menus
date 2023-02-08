@@ -11,12 +11,18 @@ return [
         "register" => "Register",
         "settings" => "Account settings",
 
-        "name"  => "Name",
-        "email" => [
+        "name"     => "Name",
+        "email"    => [
             "title"               => "E-Mail",
             "unverified"          => "Your email address is unverified.",
             "resent-verification" => "Re-sent E-mail",
             "verification-sent"   => "Verification E-Mail has been sent to {email}"
+        ],
+        "password" => [
+            "title"   => "Password",
+            "current" => "Current Password",
+            "new"     => "New Password",
+            "confirm" => "Confirm Password",
         ],
 
         "update" => [
@@ -28,7 +34,7 @@ return [
         "update_password" => [
             "title"       => "Update Password",
             "description" => "Update your account's profile information and email address.",
-            "saved"       => "Profile has been saved",
+            "saved"       => "Password has been changed",
         ]
     ],
     "dishes"  => [

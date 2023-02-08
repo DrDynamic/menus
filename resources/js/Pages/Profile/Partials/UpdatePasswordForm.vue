@@ -1,10 +1,11 @@
 <script setup>
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
-import { useForm } from '@inertiajs/inertia-vue3';
-import { ref } from 'vue';
+import {useForm} from '@inertiajs/inertia-vue3';
+import {ref} from 'vue';
+import notification from "@/Util/notification";
+import {useI18n} from "vue-i18n";
+import PasswordField from "@/Components/Form/PasswordField.vue";
+
+const {t} = useI18n();
 
 const passwordInput = ref(null);
 const currentPasswordInput = ref(null);
@@ -18,7 +19,10 @@ const form = useForm({
 const updatePassword = () => {
     form.put(route('password.update'), {
         preserveScroll: true,
-        onSuccess: () => form.reset(),
+        onSuccess: () => {
+            form.reset();
+            notification.success(t('pages.profile.update_password.saved'));
+        },
         onError: () => {
             if (form.errors.password) {
                 form.reset('password', 'password_confirmation');
@@ -43,64 +47,27 @@ const updatePassword = () => {
         </p>
 
         <v-form @submit.prevent="updatePassword">
-            <v-text-field type="password" />
+            <PasswordField :label="$t('pages.profile.password.current')"
+                           v-model="form.current_password"
+                           autocomplete="password"
+                           ref="currentPasswordInput"
+                           :error-messages="form.errors.current_password"/>
+
+            <PasswordField :label="$t('pages.profile.password.new')"
+                          v-model="form.password"
+                          auto-complete="new-password"
+                          ref="passwordInput"
+                          :error-messages="form.errors.password"/>
+
+            <PasswordField :label="$t('pages.profile.password.confirm')"
+                          v-model="form.password_confirmation"
+                          auto-complete="new-password"
+                          :error-messages="form.errors.password_confirmation"/>
+
+            <v-btn color="primary" type="submit"
+                   :disabled="form.processing">
+                {{ $t('pages.common.save') }}
+            </v-btn>
         </v-form>
-
     </v-container>
-    <section>
-
-        <form @submit.prevent="updatePassword" class="mt-6 space-y-6">
-            <div>
-                <InputLabel for="current_password" value="Current Password" />
-
-                <TextInput
-                    id="current_password"
-                    ref="currentPasswordInput"
-                    v-model="form.current_password"
-                    type="password"
-                    class="mt-1 block w-full"
-                    autocomplete="current-password"
-                />
-
-                <InputError :message="form.errors.current_password" class="mt-2" />
-            </div>
-
-            <div>
-                <InputLabel for="password" value="New Password" />
-
-                <TextInput
-                    id="password"
-                    ref="passwordInput"
-                    v-model="form.password"
-                    type="password"
-                    class="mt-1 block w-full"
-                    autocomplete="new-password"
-                />
-
-                <InputError :message="form.errors.password" class="mt-2" />
-            </div>
-
-            <div>
-                <InputLabel for="password_confirmation" value="Confirm Password" />
-
-                <TextInput
-                    id="password_confirmation"
-                    v-model="form.password_confirmation"
-                    type="password"
-                    class="mt-1 block w-full"
-                    autocomplete="new-password"
-                />
-
-                <InputError :message="form.errors.password_confirmation" class="mt-2" />
-            </div>
-
-            <div class="flex items-center gap-4">
-                <PrimaryButton :disabled="form.processing">Save</PrimaryButton>
-
-                <Transition enter-from-class="opacity-0" leave-to-class="opacity-0" class="transition ease-in-out">
-                    <p v-if="form.recentlySuccessful" class="text-sm text-gray-600">Saved.</p>
-                </Transition>
-            </div>
-        </form>
-    </section>
 </template>

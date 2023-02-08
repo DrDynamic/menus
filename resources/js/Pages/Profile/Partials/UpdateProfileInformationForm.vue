@@ -30,7 +30,7 @@ function resentVerification() {
 }
 
 function onSubmited() {
-    notification.info(t('pages.profile.update.saved'));
+    notification.success(t('pages.profile.update.saved'));
 }
 
 </script>
@@ -84,11 +84,6 @@ function onSubmited() {
                        :disabled="form.processing">
                     {{ $t('pages.common.save') }}
                 </v-btn>
-
-
-                <Transition enter-from-class="opacity-0" leave-to-class="opacity-0" class="transition ease-in-out">
-                    <p v-if="form.recentlySuccessful" class="text-sm text-gray-600">Saved.</p>
-                </Transition>
             </div>
         </v-form>
 
