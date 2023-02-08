@@ -30,7 +30,7 @@ function resentVerification() {
 }
 
 function onSubmited() {
-    notification.info(t('pages.profile.email.saved'));
+    notification.info(t('pages.profile.update.saved'));
 }
 
 </script>

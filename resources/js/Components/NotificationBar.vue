@@ -1,21 +1,34 @@
 <script setup>
 import eventBus from "@/Util/eventBus";
+import {ref} from "vue";
 
 
-let isOpen = false;
-let notification = null;
+let isOpen = ref(false);
+let notification = ref({
+    color: '',
+    icon: '',
+    timeout: 4000,
+    text: ''
+});
 
 eventBus.$on('notification', (n) => {
+    notification.value.icon = n.icon || null;
+    notification.value.color = n.color || 'secondary';
+    notification.value.text = n.text || '';
+    notification.value.timeout = n.timeout || 4000;
 
-    notification = n;
-    isOpen = true;
-
-    console.log("OPen Snackbar");
+    isOpen.value = true;
 });
 </script>
 <template>
-    <v-snackbar v-if="isOpen" v-model="isOpen" :color="notification.color">
-        <v-icon>{{ notification.icon }}</v-icon>
-        {{ notification.text }}
-    </v-snackbar>
+    <div>
+        <v-btn @click="isOpen=true">Open</v-btn>
+        {{ isOpen }}
+        <v-snackbar v-model="isOpen" :color="notification.color" :timeout="notification.timeout">
+            <v-icon>{{ notification.icon }}</v-icon>
+            {{ notification.text }}
+        </v-snackbar>
+
+    </div>
+
 </template>
