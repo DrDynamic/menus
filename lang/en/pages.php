@@ -2,7 +2,7 @@
 
 return [
     "common"  => [
-        "save"  => "Save",
+        "save" => "Save",
     ],
     "profile" => [
         "title" => "Profile",
@@ -22,7 +22,13 @@ return [
         "update" => [
             "title"       => "Profile Information",
             "description" => "Update your account's profile information and email address.",
-            "saved" => "Profile has been saved",
+            "saved"       => "Profile has been saved",
+        ],
+
+        "update_password" => [
+            "title"       => "Update Password",
+            "description" => "Update your account's profile information and email address.",
+            "saved"       => "Profile has been saved",
         ]
     ],
     "dishes"  => [

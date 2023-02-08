@@ -7,47 +7,12 @@ import {createInertiaApp} from '@inertiajs/inertia-vue3';
 import {InertiaProgress} from '@inertiajs/progress';
 import {resolvePageComponent} from 'laravel-vite-plugin/inertia-helpers';
 import {ZiggyVue} from '../../vendor/tightenco/ziggy/dist/vue.m';
-import {createI18n} from "vue-i18n";
-import messages from './messages.json';
-// Vuetify
-import {createVuetify} from 'vuetify'
-import * as components from 'vuetify/components'
-import * as directives from 'vuetify/directives'
-import {aliases, mdi} from "vuetify/iconsets/mdi";
-import colors from "@/Theme/colors";
 
-const appName = window.document.getElementsByTagName('title')[0]?.innerText || 'Laravel';
+// Plugins
+import buildVuetify from "@/Plugins/buildVuetify";
+import buildI18n from "@/Plugins/buildI18n";
 
-const i18n = createI18n({
-    legacy: false,
-    locale: 'en',
-    messages: messages
-});
-
-const cookbook = {
-    dark: false,
-    colors,
-}
-
-const vuetify = createVuetify({
-    components,
-    directives,
-
-    icons: {
-        defaultSet: 'mdi',
-        aliases,
-        sets: {
-            mdi,
-        }
-    },
-
-    theme: {
-        defaultTheme: 'cookbook',
-        themes: {
-            cookbook,
-        }
-    }
-});
+const appName = window.document.getElementsByTagName('title')[0]?.innerText || 'Cookbook';
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
@@ -56,8 +21,8 @@ createInertiaApp({
         return createApp({render: () => h(app, props)})
             .use(plugin)
             .use(ZiggyVue, Ziggy)
-            .use(i18n)
-            .use(vuetify)
+            .use(buildI18n())
+            .use(buildVuetify())
             .mount(el);
     },
 });

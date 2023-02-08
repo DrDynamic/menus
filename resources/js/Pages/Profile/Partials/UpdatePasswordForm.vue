@@ -34,14 +34,20 @@ const updatePassword = () => {
 </script>
 
 <template>
-    <section>
-        <header>
-            <h2 class="text-lg font-medium text-gray-900">Update Password</h2>
+    <v-container fluid>
+        <p class="text-h6">
+            {{ $t('pages.profile.update_password.title') }}
+        </p>
+        <p class="text-subtitle-1">
+            {{ $t('pages.profile.update_password.description') }}
+        </p>
 
-            <p class="mt-1 text-sm text-gray-600">
-                Ensure your account is using a long, random password to stay secure.
-            </p>
-        </header>
+        <v-form @submit.prevent="updatePassword">
+            <v-text-field type="password" />
+        </v-form>
+
+    </v-container>
+    <section>
 
         <form @submit.prevent="updatePassword" class="mt-6 space-y-6">
             <div>
