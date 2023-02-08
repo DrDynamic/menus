@@ -1,20 +1,29 @@
 <script setup>
-import ApplicationLogo from '@/Components/ApplicationLogo.vue';
-import { Link } from '@inertiajs/inertia-vue3';
-</script>
-
+import ApplicationLogo from "@/Components/ApplicationLogo.vue";
+import NotificationBar from "@/Components/NotificationBar.vue";</script>
 <template>
-    <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
-        <div>
-            <Link href="/">
-                <ApplicationLogo class="w-20 h-20 fill-current text-gray-500" />
-            </Link>
-        </div>
+    <v-app>
+        <v-app-bar color="primary">
+            <v-container class="pa-0 pt-2">
+                <v-row align="center">
+                    <v-col cols="auto">
+                        <ApplicationLogo style="fill: white;width: 50px"/>
 
-        <div
-            class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg"
-        >
-            <slot />
-        </div>
-    </div>
+                    </v-col>
+                    <v-col>
+                        <v-app-bar-title>{{ $t('app.name') }}</v-app-bar-title>
+                    </v-col>
+                </v-row>
+            </v-container>
+
+            <template v-slot:append>
+                <v-btn :href="route('login')">{{ $t("pages.profile.login") }}</v-btn>
+                <v-btn :href="route('register')">{{ $t("pages.profile.register") }}</v-btn>
+            </template>
+        </v-app-bar>
+        <v-main>
+            <slot/>
+            <notification-bar/>
+        </v-main>
+    </v-app>
 </template>

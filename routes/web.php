@@ -38,6 +38,8 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dishes', [DishController::class, 'list']);
+    Route::get('/dishes/tailwind', [DishController::class, 'listTailwind']);
+
 });
 
 require __DIR__ . '/auth.php';

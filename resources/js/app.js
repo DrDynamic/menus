@@ -1,6 +1,7 @@
 import './bootstrap';
+import '@mdi/font/css/materialdesignicons.css';
+import 'vuetify/styles';
 import '../css/app.css';
-
 import {createApp, h} from 'vue';
 import {createInertiaApp} from '@inertiajs/inertia-vue3';
 import {InertiaProgress} from '@inertiajs/progress';
@@ -9,20 +10,43 @@ import {ZiggyVue} from '../../vendor/tightenco/ziggy/dist/vue.m';
 import {createI18n} from "vue-i18n";
 import messages from './messages.json';
 // Vuetify
-import 'vuetify/styles'
-import { createVuetify } from 'vuetify'
+import {createVuetify} from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
+import {aliases, mdi} from "vuetify/iconsets/mdi";
+import colors from "@/Theme/colors";
 
 const appName = window.document.getElementsByTagName('title')[0]?.innerText || 'Laravel';
 
 const i18n = createI18n({
+    legacy: false,
+    locale: 'en',
     messages: messages
 });
 
+const cookbook = {
+    dark: false,
+    colors,
+}
+
 const vuetify = createVuetify({
     components,
-    directives
+    directives,
+
+    icons: {
+        defaultSet: 'mdi',
+        aliases,
+        sets: {
+            mdi,
+        }
+    },
+
+    theme: {
+        defaultTheme: 'cookbook',
+        themes: {
+            cookbook,
+        }
+    }
 });
 
 createInertiaApp({
