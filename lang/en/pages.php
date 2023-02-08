@@ -2,7 +2,8 @@
 
 return [
     "common"  => [
-        "save" => "Save",
+        "save"   => "Save",
+        "cancel" => "Cancel",
     ],
     "profile" => [
         "title" => "Profile",
@@ -35,7 +36,19 @@ return [
             "title"       => "Update Password",
             "description" => "Update your account's profile information and email address.",
             "saved"       => "Password has been changed",
-        ]
+        ],
+
+        "delete" => [
+            "title"       => "Delete Account",
+            "submit"      => "Delete Account",
+            "description" => "Once your account is deleted, all of its resources and data will be permanently deleted. Before deleting
+                your account, please download any data or information that you wish to retain.",
+            "confirm"     => [
+                "title"       => "Are you sure you want to delete your account?",
+                "description" => "Once your account is deleted, all of its resources and data will be permanently deleted. Please
+                    enter your password to confirm you would like to permanently delete your account.",
+            ],
+        ],
     ],
     "dishes"  => [
         "title" => "Dishes",

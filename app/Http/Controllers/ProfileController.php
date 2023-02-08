@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\Menu;
+use App\Models\User;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -49,10 +51,14 @@ class ProfileController extends Controller
             'password' => ['required', 'current-password'],
         ]);
 
+        /** @var User $user */
         $user = $request->user();
 
         Auth::logout();
 
+        $user->menus->each(function (Menu $menu) {
+            $menu->update(['created_by_user_id' => null]);
+        });
         $user->delete();
 
         $request->session()->invalidate();

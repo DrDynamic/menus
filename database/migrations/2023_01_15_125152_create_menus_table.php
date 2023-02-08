@@ -18,15 +18,13 @@ return new class extends Migration {
             $table->id();
             $table->string('name', 32);
             $table->string('image_url')->nullable();
-            $table->unsignedBigInteger('created_by_user_id');
+            $table->unsignedBigInteger('created_by_user_id')->nullable();
             $table->timestamps();
             $table->softDeletes();
 
             $table->foreign('created_by_user_id')
                 ->references('id')
-                ->on(User::TABLE)
-                ->onDelete('cascade')
-                ->onUpdate('cascade');
+                ->on(User::TABLE);
         });
     }
 

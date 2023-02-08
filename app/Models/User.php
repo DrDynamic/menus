@@ -22,6 +22,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property Carbon updated_at
  *
  * Foreigns
+ * @property Menu[]|Collection menus
  * @property Role[]|Collection roles
  * @property string[]|Collection permissions
  */
@@ -65,6 +66,11 @@ class User extends Authenticatable
     public function roles(): BelongsToMany
     {
         return $this->belongsToMany(Role::class);
+    }
+
+    public function menus()
+    {
+        return $this->hasMany(Menu::class, 'created_by_user_id');
     }
 
     public function hasPermission(string $permission)
