@@ -2,6 +2,7 @@
 import {Head, useForm} from '@inertiajs/inertia-vue3';
 import CookbookLayout from "@/Layouts/CookbookLayout.vue";
 import PasswordField from "@/Components/Form/PasswordField.vue";
+import GuestLayout from "@/Layouts/GuestLayout.vue";
 
 defineProps({
     canResetPassword: Boolean,
@@ -22,7 +23,7 @@ const submit = () => {
 </script>
 
 <template>
-    <CookbookLayout>
+    <GuestLayout hide-login>
         <Head :title="$t('pages.profile.login.title')"/>
 
         <v-container>
@@ -84,5 +85,5 @@ const submit = () => {
                 </v-col>
             </v-row>
         </v-container>
-    </CookbookLayout>
+    </GuestLayout>
 </template>

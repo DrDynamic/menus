@@ -1,6 +1,14 @@
 <script setup>
 import ApplicationLogo from "@/Components/ApplicationLogo.vue";
-import NotificationBar from "@/Components/NotificationBar.vue";</script>
+import NotificationBar from "@/Components/NotificationBar.vue";
+
+defineProps({
+    hideLogin: Boolean,
+    hideRegister: Boolean,
+});
+
+</script>
+
 <template>
     <v-app>
         <v-app-bar color="primary">
@@ -17,8 +25,16 @@ import NotificationBar from "@/Components/NotificationBar.vue";</script>
             </v-container>
 
             <template v-slot:append>
-                <v-btn :href="route('login')" color="white">{{ $t("pages.profile.login.title") }}</v-btn>
-                <v-btn :href="route('register')" color="white">{{ $t("pages.profile.register") }}</v-btn>
+                <v-btn v-if="!hideLogin"
+                       :href="route('login')"
+                       color="white">
+                    {{ $t("pages.profile.login.title") }}
+                </v-btn>
+                <v-btn v-if="!hideRegister"
+                       :href="route('register')"
+                       color="white">
+                    {{ $t("pages.profile.register") }}
+                </v-btn>
             </template>
         </v-app-bar>
         <v-main>

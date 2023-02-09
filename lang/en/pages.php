@@ -8,7 +8,6 @@ return [
     "profile" => [
         "title" => "Profile",
 
-        "login"    => "Login",
         "register" => "Register",
         "settings" => "Account settings",
 
@@ -32,6 +31,13 @@ return [
             "forgot_password" => "Forgot your password?",
             "submit"          => "Log in",
             "logout"          => "Log out"
+        ],
+        "reset_password" => [
+            "title" => "Forgot Password",
+            "description" => "Forgot your password? No problem. Just let us know your email address and we will email you a password reset
+            link that will allow you to choose a new one.",
+            "submit" => "Reset Password"
+
         ],
 
         "update" => [

@@ -1,10 +1,6 @@
 <script setup>
 import GuestLayout from '@/Layouts/GuestLayout.vue';
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
-import { Head, useForm } from '@inertiajs/inertia-vue3';
+import {Head, useForm} from '@inertiajs/inertia-vue3';
 
 defineProps({
     status: String,
@@ -21,39 +17,45 @@ const submit = () => {
 
 <template>
     <GuestLayout>
-        <Head title="Forgot Password" />
+        <Head :title="$t('pages.profile.reset_password.title')"/>
 
-        <div class="mb-4 text-sm text-gray-600">
-            Forgot your password? No problem. Just let us know your email address and we will email you a password reset
-            link that will allow you to choose a new one.
-        </div>
+        <v-container>
+            <v-row justify="center">
+                <v-col cols="auto">
+                    <v-card width="640" class="mt-10">
+                        <v-card-title>{{ $t('pages.profile.reset_password.title') }}</v-card-title>
 
-        <div v-if="status" class="mb-4 font-medium text-sm text-green-600">
-            {{ status }}
-        </div>
+                        <v-alert type="success" v-if="status">
+                            {{ status }}
+                        </v-alert>
 
-        <form @submit.prevent="submit">
-            <div>
-                <InputLabel for="email" value="Email" />
+                        <v-card-text>
+                            {{ $t('pages.profile.reset_password.description') }}
+                        </v-card-text>
 
-                <TextInput
-                    id="email"
-                    type="email"
-                    class="mt-1 block w-full"
-                    v-model="form.email"
-                    required
-                    autofocus
-                    autocomplete="username"
-                />
+                        <v-container>
+                            <v-text-field id="email"
+                                          type="email"
+                                          :label="$t('pages.profile.email.title')"
+                                          v-model="form.email"
+                                          required
+                                          autofocus
+                                          autocomplete="username"
+                                          :error-messages="form.errors.email"/>
+                        </v-container>
 
-                <InputError class="mt-2" :message="form.errors.email" />
-            </div>
-
-            <div class="flex items-center justify-end mt-4">
-                <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Email Password Reset Link
-                </PrimaryButton>
-            </div>
-        </form>
+                        <v-card-actions class="flex">
+                            <v-spacer/>
+                            <v-btn color="primary"
+                                   variant="elevated"
+                                   :disabled="form.processing"
+                                   @click="submit">
+                                {{ $t('pages.profile.reset_password.submit') }}
+                            </v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-col>
+            </v-row>
+        </v-container>
     </GuestLayout>
 </template>
