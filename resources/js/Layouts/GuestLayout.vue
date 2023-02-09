@@ -17,8 +17,8 @@ import NotificationBar from "@/Components/NotificationBar.vue";</script>
             </v-container>
 
             <template v-slot:append>
-                <v-btn :href="route('login')">{{ $t("pages.profile.login") }}</v-btn>
-                <v-btn :href="route('register')">{{ $t("pages.profile.register") }}</v-btn>
+                <v-btn :href="route('login')" color="white">{{ $t("pages.profile.login.title") }}</v-btn>
+                <v-btn :href="route('register')" color="white">{{ $t("pages.profile.register") }}</v-btn>
             </template>
         </v-app-bar>
         <v-main>
